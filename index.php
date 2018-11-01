@@ -38,8 +38,11 @@ $itemPrice = 25.00;
     <input type="hidden" name="item_name" value="<?php echo $itemName; ?>">
     <input type="hidden" name="item_number" value="<?php echo $itemNumber; ?>">
     <input type="hidden" name="currency_code" value="USD">
+    <!-- a3 - amount to billed each recurrence -->
     <input type="hidden" name="a3" id="paypalAmt" value="<?php echo $itemPrice; ?>">
+    <!-- p3 - number of time periods between each recurrence -->
     <input type="hidden" name="p3" id="paypalValid" value="1">
+    <!-- t3 - time period (D=days, W=weeks, M=months, Y=years) -->
     <input type="hidden" name="t3" value="M">
     <!-- custom variable user ID -->
     <input type="hidden" name="custom" value="<?php echo $loggedInUserID; ?>">
