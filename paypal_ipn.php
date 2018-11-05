@@ -80,11 +80,16 @@ $res = curl_exec($ch);
  */ 
 $tokens = explode("\r\n\r\n", trim($res));
 $res = trim(end($tokens));
+logData($res,'ipn');
+
 if (strcmp($res, "VERIFIED") == 0 || strcasecmp($res, "VERIFIED") == 0) {
     //Include DB configuration file
     include 'dbConfig.php';
     
     $unitPrice = 25;
+    
+    logData('$_POST','ipn');
+    logData($_POST,'ipn');
     
     //Payment data
     $subscr_id = $_POST['subscr_id'];
@@ -92,6 +97,8 @@ if (strcmp($res, "VERIFIED") == 0 || strcasecmp($res, "VERIFIED") == 0) {
     $item_number = $_POST['item_number'];
     $txn_id = $_POST['txn_id'];
     $payment_gross = $_POST['mc_gross'];
+    $fee_deducted = $_POST['mc_fee'];
+    $payment_received = $payment_gross - $fee_deducted;
     $currency_code = $_POST['mc_currency'];
     $payment_status = $_POST['payment_status'];
     $custom = $_POST['custom'];
@@ -100,15 +107,26 @@ if (strcmp($res, "VERIFIED") == 0 || strcasecmp($res, "VERIFIED") == 0) {
     $subscr_date_from = date("Y-m-d H:i:s");
     $subscr_date_to = date("Y-m-d H:i:s", strtotime($subscr_date_from. ' + '.$subscr_days.' days'));
     
+    logData('$txn_id','ipn');
+    logData($txn_id,'ipn');
+    
     if(!empty($txn_id)){
         //Check if subscription data exists with the same TXN ID.
         $prevPayment = $db->query("SELECT id FROM user_subscriptions WHERE txn_id = '".$txn_id."'");
+        
+        logData('-$query','ipn');
+        logData($query,'ipn');
+        
         if($prevPayment->num_rows > 0){
             exit();
         }else{
-            //Insert tansaction data into the database
-            $insert = $db->query("INSERT INTO user_subscriptions(user_id,validity,valid_from,valid_to,item_number,txn_id,payment_gross,currency_code,subscr_id,payment_status,payer_email) VALUES('".$custom."','".$subscr_month."','".$subscr_date_from."','".$subscr_date_to."','".$item_number."','".$txn_id."','".$payment_gross."','".$currency_code."','".$subscr_id."','".$payment_status."','".$payer_email."')");
+            $query = "INSERT INTO user_subscriptions(user_id,validity,valid_from,valid_to,item_number,txn_id,payment_gross,fee_deducted,payment_received,currency_code,subscr_id,payment_status,payer_email) VALUES('".$custom."','".$subscr_month."','".$subscr_date_from."','".$subscr_date_to."','".$item_number."','".$txn_id."','".$payment_gross."','".$fee_deducted."','".$payment_received."','".$currency_code."','".$subscr_id."','".$payment_status."','".$payer_email."')";
             
+            logData('$query','ipn');
+            logData($query,'ipn');
+            
+            //Insert tansaction data into the database
+            $insert = $db->query($query);
             //Update subscription id in users table
             if($insert){
                 $subscription_id = $db->insert_id;

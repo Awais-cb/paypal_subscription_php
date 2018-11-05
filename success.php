@@ -11,6 +11,7 @@ if(!empty($_GET['item_number']) && !empty($_GET['tx']) && !empty($_GET['amt']) &
     $payment_status = $_GET['st'];
     $custom = $_GET['cm'];
     
+    sleep(5);
     //Check if subscription data exists with the TXN ID
     $prevPaymentResult = $db->query("SELECT * FROM user_subscriptions WHERE txn_id = '".$txn_id."'");
     
